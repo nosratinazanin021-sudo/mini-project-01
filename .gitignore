@@ -1,0 +1,27 @@
+# Python cache and bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Model files
+*.pkl
+models/*.pkl
+
+# Data files
+data/*.csv
+
+# OS-specific junk files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE settings
+.vscode/
+.idea/
