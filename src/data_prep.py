@@ -1,67 +1,138 @@
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.preprocessing import StandardScaler
-from sklearn.tree import DecisionTreeClassifier
 
-df=pd.read_csv('data/creditcard.csv')
+# ==========================================
+# 1. LOAD DATA
+# ==========================================
 
-def data_preparation_report (df, target_col='Class'):
-    print(f"\nnumber of samples:{df.shape[0]}")
-    print(f"\nnumber of features:{df.shape[1]-1}")
-    print("\ncolumns info:")
-    df.info()
-    print(f"\nfirst five rows of dataset:{df.head()}")
-    print(f"\ndescriptive statistic:{df.describe()}")
-    distribution_count=df[target_col].value_counts()
-    print(f"\nclass distribution(count): {distribution_count}")
-    distribution_percent=df[target_col].value_counts(normalize=True)
-    print(f"\nclass distribution(%):{distribution_percent}")
-    missing = df.isnull().sum()
-    print(f"\nmising values:{missing} ")
-    dup_count=df.duplicated().sum()
-    print(f"\nduplicate rows:{dup_count}")
+def load_data(file_path):
+
+    return pd.read_csv(file_path)
+
+# ==========================================
+# 2. BASIC DATA OVERVIEW
+# ==========================================
+
+def get_basic_info(df):
+
     return {
-        'n_samples':df.shape[0] ,
-        'n_feature':df.shape[1]-1,
-        'missing_values':missing,
-        'duplicated':dup_count,
-        'class_distribution(count)':distribution_count,
-        'class distribution(%)':distribution_percent
+        'n_samples': df.shape[0],
+        'n_features': df.shape[1] - 1,  
+        'columns': list(df.columns),
+        'dtypes': df.dtypes.to_dict()
     }
 
+def preview_data(df):
+
+    return df.head()
+
+def get_statistics(df):
+
+    return df.describe()
+
+# ==========================================
+# 3. DATA QUALITY CHECKS
+# ==========================================
+
+def amount_check(df):
+    print(f"\n checking amount { df['Amount'].describe()}")
+
+    return df['Amount'].describe()
+
+def time_check(df):
+    print(f"\n checking amount { df['Time'].describe()}")
+
+    return df['Time'].describe()
+
+def check_missing_values(df):
+
+    return df.isnull().sum()
+
+def check_duplicates(df):
+
+    return df.duplicated().sum()
 
 def remove_duplicates(df):
-    df_clean=df.drop_duplicates(keep='first')
+    df_clean=df.drop_duplicates()
     print(f"new samples:{df_clean.shape[0]}")
+
     return df_clean
+
+# ==========================================
+# 4. TARGET DISTRIBUTION
+# ==========================================
+
+def get_class_distribution(df, target_col='Class'):
+    counts = df[target_col].value_counts()
+    percentages = df[target_col].value_counts(normalize=True)
+
+    return {
+        'count': counts,
+        'percentage': percentages
+    }
+
+# ==========================================
+# 5. COMPREHENSIVE REPORT 
+# ==========================================
+def data_preparation_report (df, target_col='Class'):
+     
+    basic = get_basic_info(df)
+    print(f"\nnumber of samples:{basic['n_samples']}")
+    print(f"\nnumber of features:{basic['n_features']}")
+    print(f"\nfirst five rows of dataset:{preview_data(df)}")
+    print(f"\ndescriptive statistic:{get_statistics(df)}")
+
+    
+    print(f"\nmising values:{check_missing_values(df)} ")
+
+    dup_count = check_duplicates(df)
+    print(f"\nduplicate rows:{dup_count}")
+    dist = get_class_distribution(df, target_col)
+    print(f"\n Class distribution (count):\n{dist['count']}")
+    print(f"\n Class distribution (percent):\n{dist['percentage']}")
+
+    return {
+
+        'basic_info': basic,
+        'preview': preview_data(df),
+        'statistics': get_statistics(df),
+        'missing_values': check_missing_values(df),
+        'duplicates': dup_count,
+        'class_distribution': dist
+    }
+
+# ==========================================
+# 6. SPLIT DATA 
+# ==========================================
 
 def split_data(df , target_col='Class'):
     X=df.drop(columns=[target_col])
     y=df[target_col]
+
     X_train , X_test , y_train , y_test = train_test_split(
-        X ,y , test_size=0.2 , stratify=y , random_state=42
+        X ,
+        y ,
+        test_size=0.2 ,
+        stratify=y ,
+        random_state=42
     )
     print(f"\nx_train:{X_train.shape}")
     print(f"x_test:{X_test.shape}")
     print(f"\ny_train:{y_train.value_counts(normalize=True)}")
     print(f"y_test:{y_test.value_counts(normalize=True)}")
+
     return X_train , X_test , y_train , y_test 
 
-def scaling_data(X_train , X_test , cols_to_scale=['Time','Amount']):
-    scaler=StandardScaler()
-    X_train_scaled=X_train.copy()
-    X_test_scaled=X_test.copy()
-    X_train_scaled[cols_to_scale] = scaler.fit_transform(X_train[cols_to_scale])
-    X_test_scaled[cols_to_scale] = scaler.transform(X_test[cols_to_scale])
-    print(f"\nx_train_scaled:{X_train_scaled[cols_to_scale].head()}")
-    print(f"\nx_test_scaled:{X_test_scaled[cols_to_scale].head()}")
-    return X_train_scaled ,X_test_scaled, scaler
 
+#==================================
+# calling function :
+#==================================
 
-
-report=data_preparation_report(df)
-df=remove_duplicates(df) 
-X_train , X_test , y_train , y_test=split_data(df)
-X_train_scaled ,X_test_scaled, scaler=scaling_data(X_test , X_test)
+if __name__ == "__main__":
+    df = load_data('data/creditcard.csv')
+    
+    
+    report = data_preparation_report(df, target_col='Class')
+    
+    X_train, X_test, y_train, y_test = split_data(df, target_col='Class')
+   
