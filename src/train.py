@@ -153,7 +153,27 @@ if __name__ == "__main__":
     print("\n===== Scaling Comparison Results =====")
     print(scaling_comparison_df)
 
-   
+   # ---------- Decision Tree max_depth Experiment ----------
+    
+    depth_results = {}
+
+    for depth in [2, 5, 10, None]:
+        depth_results[f'max_depth={depth}'] = train_and_evaluate(
+            build_pipeline(DecisionTreeClassifier(max_depth=depth, random_state=42), scale=False),
+            f'max_depth={depth}', X_train, y_train, X_test, y_test, verbose=False
+        )
+
+    depth_comparison_df = pd.DataFrame({
+        name: {
+            'precision': res['precision'],
+            'recall': res['recall'],
+            'f1-score': res['f1-score']
+        }
+        for name, res in depth_results.items()
+    }).T
+    print("\n===== Decision Tree max_depth Analysis =====")
+    print(depth_comparison_df)
+
 
 
 

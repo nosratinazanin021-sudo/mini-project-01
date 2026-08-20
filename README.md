@@ -47,6 +47,14 @@ To get started, install dependencies with `pip install -r requirements.txt`, the
 - Why is Decision Tree less sensitive?
     Decision Tree is less sensitive to scaling because it evaluates one feature at a time against a threshold, rather than combining multiple features into a single distance calculation like KNN does. Since the comparison only involves one feature and one threshold, the relative order of values remains unchanged regardless of scaling.
 
+## Hyperparameter Analysis:
 
+- Did overfitting occur?
+    YES, overfitting occurred with max_depth=None , When max_depth=None, the tree grows until all leaves are pure (perfectly classifies training data)
+    But on test data, performance drops significantly (F1 drops from 0.831 → 0.749)
+    The model learned noise and specific patterns from training data that don't generalize
+- Which value provides the best balance?
+    max_depth=5 provides the best balance. no ovrfiting
+    
 
 Status: 🚧 In progress
