@@ -41,4 +41,12 @@ To get started, install dependencies with `pip install -r requirements.txt`, the
 - Why can a model achieve very high Accuracy while still being a poor fraud detection system?
     A model can have high accuracy but fail at fraud detection because fraud cases are extremely rare (class imbalance). If the model simply predicts every transaction as "non-fraud," it achieves high accuracy but catches zero actual frauds. Therefore, metrics like recall, precision, and F1-score are far more meaningful than accuracy in such imbalanced scenarios.
 
+## Effect of Scaling:
+ - Why is KNN sensitive to scaling?
+    KNN is sensitive to feature scaling because it relies directly on distance calculations between data points. When features have very different numeric ranges  such as Time compared to V1–V28 (which are roughly centered around 0)  the feature with the larger range dominates the distance calculation. This causes KNN to effectively ignore the contribution of smaller-scale features, even if they are more informative for distinguishing between classes.
+- Why is Decision Tree less sensitive?
+    Decision Tree is less sensitive to scaling because it evaluates one feature at a time against a threshold, rather than combining multiple features into a single distance calculation like KNN does. Since the comparison only involves one feature and one threshold, the relative order of values remains unchanged regardless of scaling.
+
+
+
 Status: 🚧 In progress
