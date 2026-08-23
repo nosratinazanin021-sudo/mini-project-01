@@ -55,6 +55,20 @@ To get started, install dependencies with `pip install -r requirements.txt`, the
     The model learned noise and specific patterns from training data that don't generalize
 - Which value provides the best balance?
     max_depth=5 provides the best balance. no ovrfiting
-    
+
+
+## Impact of Classification Threshold:
+
+-What happens to Recall when the threshold decreases?
+    As the threshold decreases, Recall increases (from 0.6020 to 0.6939). This happens because a lower threshold makes the model more lenient about predicting fraud, allowing it to catch more actual fraud cases.
+
+- What happens to Precision?
+    As the threshold decreases, Precision decreases (from 0.8310  to 0.7312). This happens because the model predicts fraud more easily, which increases the number of false alarms.
+
+- Which threshold would you recommend for a fraud detection system?
+    I would recommend threshold = 0.5, since it achieves the highest F1-score (0.7168) among the three options, providing the best overall balance between Precision and Recall. However, if minimizing missed fraud cases is the top priority, threshold = 0.3 could be considered instead, since it provides the highest Recall (0.6939).
+
+- What trade-off does your chosen threshold create?
+    Choosing threshold = 0.5 creates a trade-off between Precision and Recall: compared to threshold = 0.3, we sacrifice some Recall in exchange for higher Precision , resulting in the most balanced performance overall.
 
 Status: 🚧 In progress

@@ -13,6 +13,7 @@ from data_prep import load_data, split_data
 # ===================================
 # scaling with pipeline:
 # ===================================
+
 def build_pipeline(model, scale=True):
     steps = []
     if scale:
@@ -55,19 +56,9 @@ def train_and_evaluate(pipeline, model_name, X_train, y_train, X_test, y_test, v
         'f1-score': report_dictionary['1']['f1-score']
     }
 
-
-# ======================================
-# calling data
-# ======================================
-
-if __name__ == "__main__":
-    df = load_data('data/creditcard.csv')
-    X = df.drop(columns=['Class'])
-    y = df['Class']
-
-    X_train, X_test, y_train, y_test = split_data(df, target_col='Class')
-
     # ---------- Train/Test Split Results ----------
+
+def run_train_test_experiments(X_train, y_train, X_test, y_test):
 
     results = {}
 
@@ -95,13 +86,15 @@ if __name__ == "__main__":
         }
         for name, res in results.items()
     }).T
-    print("\n===== Train/Test Split Results =====")
-    print(summary_df)
-
     for name, res in results.items():
-        print(f"\n{name}\n{confusion_matrix(y_test, res['y_pred'])}")
+            print(f"\n{name}\n{confusion_matrix(y_test, res['y_pred'])}")
+            
+    return results, summary_df
+
+    
 
     # ---------- Cross-Validation Results ----------
+def run_cross_validation_experiments(X, y):
 
     models = {
         'Logistic Regression': build_pipeline(LogisticRegression(random_state=42, max_iter=1000), scale=True),
@@ -119,16 +112,18 @@ if __name__ == "__main__":
     cv_results = []
 
     for name, pipeline in models.items():
-        print(f" Starting cross-validation ")
+        print(f" Starting cross-validation {name} ")
         res = cross_validation_models(pipeline, name, X, y, cv, scoring)
         cv_results.append(res)
-        print(f"Finished ")
+        print(f"Finished {name}")
 
     cv_summary_df = pd.DataFrame(cv_results).set_index('model_name')
-    print("\n===== Cross Validation Results =====")
-    print(cv_summary_df)
 
-    # ---------- Scaling Experiment (KNN) ----------
+    return cv_summary_df
+
+
+    #---------- Scaling Experiment (KNN) ----------
+def run_scaling_experiment(X_train, y_train, X_test, y_test):
 
     results_scaling_experiment = {}
 
@@ -142,7 +137,7 @@ if __name__ == "__main__":
         'knn(with scaling)', X_train, y_train, X_test, y_test, verbose=False
     )
 
-    scaling_comparison_df = pd.DataFrame({
+    scaling_df = pd.DataFrame({
         name: {
             'precision': res['precision'],
             'recall': res['recall'],
@@ -150,11 +145,11 @@ if __name__ == "__main__":
         }
         for name, res in results_scaling_experiment.items()
     }).T
-    print("\n===== Scaling Comparison Results =====")
-    print(scaling_comparison_df)
+    return scaling_df
 
    # ---------- Decision Tree max_depth Experiment ----------
-    
+def run_depth_experiment(X_train, y_train, X_test, y_test):
+
     depth_results = {}
 
     for depth in [2, 5, 10, None]:
@@ -163,7 +158,7 @@ if __name__ == "__main__":
             f'max_depth={depth}', X_train, y_train, X_test, y_test, verbose=False
         )
 
-    depth_comparison_df = pd.DataFrame({
+    depth_df = pd.DataFrame({
         name: {
             'precision': res['precision'],
             'recall': res['recall'],
@@ -171,13 +166,64 @@ if __name__ == "__main__":
         }
         for name, res in depth_results.items()
     }).T
-    print("\n===== Decision Tree max_depth Analysis =====")
-    print(depth_comparison_df)
+    return depth_df
+
+ # ---------- Classification Threshold  ----------
+def run_threshold_experiment(X_train, y_train, X_test, y_test, thresholds=[0.3 , 0.5, 0.7]):
+
+    threshold_model= build_pipeline(LogisticRegression(random_state=42 , max_iter= 1000),scale=True)
+    threshold_model.fit(X_train , y_train)
+
+    threshold_results={}
+    for threshold in thresholds:
+        y_prob=threshold_model.predict_proba(X_test)[:,1]
+        y_pred= (y_prob > threshold).astype(int)
+
+        report_dic= classification_report (y_test , y_pred , output_dict=True)
+        threshold_results[f'threshold={threshold}']={
+          
+        'precision': report_dic['1']['precision'],
+        'recall': report_dic['1']['recall'],
+        'f1-score': report_dic['1']['f1-score']
+        }
+
+    threshold_df=pd.DataFrame(threshold_results).T.round(4)
+    return threshold_df
 
 
 
+#----------------- calling function ------------------
 
+if __name__ == "__main__":
+    df = load_data('data/creditcard.csv')
+    X = df.drop(columns=['Class'])
+    y = df['Class']
+    X_train, X_test, y_train, y_test = split_data(df, target_col='Class')
+    
+    print("\n" + "="*50)
+    print("====== Running Train/Test Split Experiments =======")
+    results, summary_df = run_train_test_experiments(X_train, y_train, X_test, y_test)
+    print(summary_df)
+    
+    print("\n" + "="*50)
+    print("====== Running Cross-Validation Experiments ======")
+    cv_df = run_cross_validation_experiments(X, y)
+    print(cv_df)
+    
+    print("\n" + "="*50)
+    print("====== Running Scaling Experiment ======")
+    scaling_df = run_scaling_experiment(X_train, y_train, X_test, y_test)
+    print(scaling_df)
+    
+    print("\n" + "="*50)
+    print("====== Running Depth Experiment ======")
+    depth_df = run_depth_experiment(X_train, y_train, X_test, y_test)
+    print(depth_df)
+    
+    print("\n" + "="*50)
+    print("======= Running Threshold Experiment ======")
+    threshold_df = run_threshold_experiment(X_train, y_train, X_test, y_test)
+    print(threshold_df)
+    
 
-
-
-
+   

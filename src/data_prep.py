@@ -133,6 +133,6 @@ if __name__ == "__main__":
     
     
     report = data_preparation_report(df, target_col='Class')
-    
+    df=remove_duplicates(df)
     X_train, X_test, y_train, y_test = split_data(df, target_col='Class')
    
