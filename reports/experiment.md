@@ -103,5 +103,4 @@ For both models, lowering the threshold increases Recall at the cost of Precisio
 The final KNN model and scaler were serialized (`models/final_model.pkl`, `models/scaler.pkl`) and wrapped in:- A command-line prediction script (`predict.py`) that reads a transaction from `input.json` and writes a prediction to `output.json`.- A REST API (`api.py`, built with FastAPI) exposing a `POST /predict` endpoint, deployed as a live web service.
 
 ## 8. Summary
-
-| Aspect | Decision ||---|---|| Final model | KNN (k=5, scaled features) || Final threshold | 0.5 || Key trade-off | ~19% of fraud cases missed in exchange for a very low false-alarm rate (Precision 0.92) || Main limitation | Even the best model does not achieve near-perfect Recall on this imbalanced dataset; further improvement would likely require resampling techniques (e.g., SMOTE) or cost-sensitive learning approaches beyond simple threshold tuning |
+| Aspect | Decision ||---|---|| Final model | KNN (k=5, scaled features) || Final threshold | 0.5 || Key trade-off | ~19% of fraud cases missed in exchange for a very low false-alarm rate (Precision 0.92) || Main limitation | Even the best model does not achieve near-perfect Recall on this imbalanced dataset; further improvement would likely require resampling techniques or cost-sensitive learning approaches beyond simple threshold tuning |
