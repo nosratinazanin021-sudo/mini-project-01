@@ -86,7 +86,7 @@ KNN:
 For both models, lowering the threshold increases Recall at the cost of Precision, and raising it does the opposite. For KNN specifically, threshold = 0.5 (the default) already provides the best F1-score balance, though threshold = 0.3 remains a close and reasonable alternative if maximizing Recall is the priority.
 
 
-## 6. Final Model Selection
+## 7. Final Model Selection
  Selected model: KNN (n_neighbors=5, with feature scaling)
  Selected threshold: 0.5 (default)
 
@@ -99,14 +99,13 @@ For both models, lowering the threshold increases Recall at the cost of Precisio
 | Overfitting behavior* | The Decision Tree experiment directly demonstrated overfitting: performance peaked at `max_depth=5` and declined as the tree was allowed to grow deeper, with the unconstrained tree performing worst. KNN, as a non-parametric, instance-based method, does not exhibit this same failure mode and delivered the most consistent results across experiments. || *False Positive / False Negative trade-off | KNN offers the best trade-off available: only 7 false alarms while still catching 79 of 98 fraud cases (FN = 19) — outperforming both alternatives on both sides of this trade-off simultaneously. |
 | Problem requirements* | Since missing a fraudulent transaction (False Negative) is generally costlier than a false alarm (False Positive), Recall is prioritized — but not at the total expense of Precision. KNN delivers the highest Recall (0.8061) of all models while also having the highest Precision, making it the clear choice rather than requiring a compromise. |
 
-## 7. Deployment
+## 8. Deployment
 The final KNN model and scaler were serialized (`models/final_model.pkl`, `models/scaler.pkl`) and wrapped in:- A command-line prediction script (`predict.py`) that reads a transaction from `input.json` and writes a prediction to `output.json`.- A REST API (`api.py`, built with FastAPI) exposing a `POST /predict` endpoint, deployed as a live web service.
 
-## 8. Summary
+## 9. Summary
 
 | Aspect | Decision |
 |---|---|
 | Final model | KNN (k=5, scaled features) |
 | Final threshold | 0.5 |
-| Key trade-off | ~19% of fraud cases missed in exchange for a very low false-alarm rate (Precision 0.92) |
-| Main limitation | Even the best model does not achieve near-perfect Recall on this imbalanced dataset; further improvement would likely require resampling techniques or cost-sensitive learning approaches beyond simple threshold tuning |
+| Key trade-off | ~19% of fraud cases missed in exchange for a very low false-alarm rate (Precision 0.92) || Main limitation | Even the best model does not achieve near-perfect Recall on this imbalanced dataset; further improvement would likely require resampling techniques or cost-sensitive learning approaches beyond simple threshold tuning |
