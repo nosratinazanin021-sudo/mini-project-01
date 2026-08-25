@@ -13,7 +13,8 @@ env/
 
 # Model files
 *.pkl
-models/*.pkl
+final_models/*.pkl
+scaler/*.pkl
 
 # Data files
 data/*.csv
@@ -25,3 +26,5 @@ Thumbs.db
 # Editor/IDE settings
 .vscode/
 .idea/
+
+results/
