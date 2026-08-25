@@ -1,3 +1,4 @@
+import joblib
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix
@@ -8,7 +9,6 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 
 from data_prep import load_data, split_data
-
 
 # ===================================
 # scaling with pipeline:
@@ -88,7 +88,7 @@ def run_train_test_experiments(X_train, y_train, X_test, y_test):
     }).T
     for name, res in results.items():
             print(f"\n{name}\n{confusion_matrix(y_test, res['y_pred'])}")
-            
+
     return results, summary_df
 
     
@@ -169,14 +169,12 @@ def run_depth_experiment(X_train, y_train, X_test, y_test):
     return depth_df
 
  # ---------- Classification Threshold  ----------
-def run_threshold_experiment(X_train, y_train, X_test, y_test, thresholds=[0.3 , 0.5, 0.7]):
-
-    threshold_model= build_pipeline(LogisticRegression(random_state=42 , max_iter= 1000),scale=True)
-    threshold_model.fit(X_train , y_train)
+def run_threshold_experiment(pipeline , X_train, y_train, X_test, y_test, thresholds=[0.3 , 0.5, 0.7]):
+    pipeline.fit(X_train , y_train)
 
     threshold_results={}
     for threshold in thresholds:
-        y_prob=threshold_model.predict_proba(X_test)[:,1]
+        y_prob=pipeline.predict_proba(X_test)[:,1]
         y_pred= (y_prob > threshold).astype(int)
 
         report_dic= classification_report (y_test , y_pred , output_dict=True)
@@ -189,7 +187,18 @@ def run_threshold_experiment(X_train, y_train, X_test, y_test, thresholds=[0.3 ,
 
     threshold_df=pd.DataFrame(threshold_results).T.round(4)
     return threshold_df
+#-----------------save final model -----------------
+def save_final_model(X_train, y_train, model, model_path='models/final_model.pkl', scaler_path='models/scaler.pkl'):
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
 
+    model.fit(X_train_scaled, y_train)
+
+    joblib.dump(scaler, scaler_path)
+    joblib.dump(model, model_path)
+
+    print(f"Scaler saved to {scaler_path}")
+    print(f"Model saved to {model_path}")
 
 
 #----------------- calling function ------------------
@@ -222,8 +231,18 @@ if __name__ == "__main__":
     
     print("\n" + "="*50)
     print("======= Running Threshold Experiment ======")
-    threshold_df = run_threshold_experiment(X_train, y_train, X_test, y_test)
-    print(threshold_df)
+    print("\n===== Logistic Regression Threshold Analysis =====")
+    lr_pipeline = build_pipeline(LogisticRegression(random_state=42, max_iter=1000), scale=True)
+    threshold_df_lr = run_threshold_experiment(lr_pipeline, X_train, y_train, X_test, y_test)
+    print(threshold_df_lr)
+    print("\n===== KNN Threshold Analysis =====")
+    knn_pipeline = build_pipeline(KNeighborsClassifier(n_neighbors=5), scale=True)
+    threshold_df_knn = run_threshold_experiment(knn_pipeline, X_train, y_train, X_test, y_test)
+    print(threshold_df_knn)
+
+    print("\n"+"="*50)
+    print("\n======saving final model======")
+    save_final_model(X_train ,y_train ,KNeighborsClassifier(n_neighbors=5))
     
 
    
