@@ -1,4 +1,5 @@
 import joblib
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix
@@ -7,6 +8,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
+from tensorflow import keras
+from tensorflow.keras import layers
 
 from data_prep import load_data, split_data
 
@@ -90,8 +93,6 @@ def run_train_test_experiments(X_train, y_train, X_test, y_test):
             print(f"\n{name}\n{confusion_matrix(y_test, res['y_pred'])}")
 
     return results, summary_df
-
-    
 
     # ---------- Cross-Validation Results ----------
 def run_cross_validation_experiments(X, y):
@@ -213,7 +214,7 @@ if __name__ == "__main__":
     print("====== Running Train/Test Split Experiments =======")
     results, summary_df = run_train_test_experiments(X_train, y_train, X_test, y_test)
     print(summary_df)
-    
+
     print("\n" + "="*50)
     print("====== Running Cross-Validation Experiments ======")
     cv_df = run_cross_validation_experiments(X, y)
