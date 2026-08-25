@@ -71,4 +71,30 @@ To get started, install dependencies with `pip install -r requirements.txt`, the
 - What trade-off does your chosen threshold create?
     Choosing threshold = 0.5 creates a trade-off between Precision and Recall: compared to threshold = 0.3, we sacrifice some Recall in exchange for higher Precision , resulting in the most balanced performance overall.
 
-Status: 🚧 In progress
+# final model selection :
+-best model :
+    knn gave the best overall performance  beating Logistic Regression, Decision Tree, and even the MLP model in the most important metrics.(i think so)
+    It had the highest precision , It's simple, fast, and interpretable no complex tuning or long training time, and it's easy to explain to non-technical stakeholders.
+    It proved to be stable and reliable  cross-validation confirmed the performance, and scaling made it work perfectly, showing it's the right fit for this imbalanced dataset.(still i think so)
+
+## Reflection Questions:
+    
+-Why is Accuracy a misleading metric for this dataset?
+    Accuracy is misleading for this dataset because the classes are heavily imbalanced – only ~0.17% of transactions are fraud, while 99.83% are normal.
+    A model that predicts every transaction as "normal" would achieve ~99.8% accuracy, but it would catch zero fraud cases – making it completely useless for fraud detection.
+    Therefore, we must focus on precision, recall, and F1-score, especially for the minority (fraud) class, to properly evaluate model performance.
+
+-What is the trade-off between detecting more fraudulent transactions and generating more false alarms?
+    The trade-off is between recall (catching fraud) and precision (avoiding false alarms).
+    Lowering the threshold increases recall (catches more fraud) but decreases precision (more false alarms).
+    Raising the threshold does the opposite: fewer false alarms but more missed fraud cases.
+    The optimal balance depends on business costs – in fraud detection, catching fraud usually outweighs the cost of false alarms
+
+ -if you had one additional week, what would you improve in your fraud detection system?
+    1. turn my trained fraud detection model into a real, interactive web application — not just a script that runs in the terminal.
+    2. live dashboard where I can see key metrics like accuracy, precision, recall, and F1-score updating in real time.
+    3. display transactions as they happen — with green for normal and red flashing alerts for fraud.
+    4. add a threshold slider so I or any user can adjust the sensitivity and immediately see how  it affects performance.
+    5. include visual charts like confusion matrices to make the results easier to understand.
+    6. be usable by non-technical people — like fraud analysts or managers — without  them needing to write any code.
+    7. to deploy it online so my fraud detection system becomes a complete, accessible tool that can be used anytime, anywhere.
